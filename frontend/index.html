@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Indoor Navigation System</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <header>
+    <h1>Indoor Navigation System</h1>
+    <span id="building-name">Loading map…</span>
+  </header>
+
+  <main>
+
+    <!-- ── Left panel: map canvas ─────────────────────────── -->
+    <section class="map-section">
+      <canvas id="map-canvas"></canvas>
+      <div class="canvas-legend">
+        <span class="legend-dot corridor"></span>Corridor
+        <span class="legend-dot classroom"></span>Room
+        <span class="legend-dot lab"></span>Lab
+        <span class="legend-dot seminar"></span>Seminar
+        <span class="legend-dot office"></span>Office
+        <span class="legend-dot ap"></span>Access Point
+        <span class="legend-dot position"></span>You
+      </div>
+    </section>
+
+    <!-- ── Right panel: controls ──────────────────────────── -->
+    <aside class="control-panel">
+
+      <section class="card">
+        <h2>Your Location</h2>
+        <p id="current-location">Unknown</p>
+        <p class="small" id="position-coords">—</p>
+      </section>
+
+      <section class="card">
+        <h2>Navigate To</h2>
+        <label for="dest-select">Destination</label>
+        <select id="dest-select"></select>
+        <button id="btn-navigate">Get Directions</button>
+        <div id="path-info" class="hidden">
+          <p class="small" id="path-steps"></p>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Simulate RSSI</h2>
+        <p class="small">Drag the dot on the map, or enter RSSI values manually.</p>
+        <div id="ap-sliders"></div>
+        <button id="btn-localise">Localise</button>
+      </section>
+
+      <section class="card">
+        <h2>How It Works</h2>
+        <ol class="small">
+          <li>Three or more WiFi APs report RSSI.</li>
+          <li>Log-distance model converts RSSI → distance.</li>
+          <li>Weighted least-squares trilateration estimates position.</li>
+          <li>Extended Kalman Filter smooths the estimate over time.</li>
+          <li>Dijkstra's algorithm finds shortest path on the node graph.</li>
+        </ol>
+      </section>
+
+    </aside>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/map-renderer.js"></script>
+  <script src="js/navigation.js"></script>
+</body>
+</html>

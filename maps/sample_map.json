@@ -1,0 +1,70 @@
+{
+  "buildingName": "Engineering Block A",
+  "canvasWidth": 900,
+  "canvasHeight": 600,
+  "metersPerPixel": 0.05,
+
+  "nodes": [
+    { "id": "entrance",  "label": "Main Entrance",   "type": "ENTRANCE",  "x": 450, "y": 560 },
+
+    { "id": "j1",        "label": "Junction 1",      "type": "CORRIDOR",  "x": 450, "y": 460 },
+    { "id": "j2",        "label": "Junction 2",      "type": "CORRIDOR",  "x": 250, "y": 340 },
+    { "id": "j3",        "label": "Junction 3",      "type": "CORRIDOR",  "x": 450, "y": 340 },
+    { "id": "j4",        "label": "Junction 4",      "type": "CORRIDOR",  "x": 650, "y": 340 },
+    { "id": "j5",        "label": "Junction 5",      "type": "CORRIDOR",  "x": 250, "y": 160 },
+    { "id": "j6",        "label": "Junction 6",      "type": "CORRIDOR",  "x": 450, "y": 160 },
+    { "id": "j7",        "label": "Junction 7",      "type": "CORRIDOR",  "x": 650, "y": 160 },
+
+    { "id": "room101",   "label": "Room 101",        "type": "CLASSROOM", "x": 100, "y": 340 },
+    { "id": "room102",   "label": "Room 102",        "type": "CLASSROOM", "x": 100, "y": 160 },
+    { "id": "room103",   "label": "Room 103",        "type": "CLASSROOM", "x": 450, "y":  60 },
+    { "id": "room104",   "label": "Room 104",        "type": "CLASSROOM", "x": 650, "y":  60 },
+
+    { "id": "lab1",      "label": "Computer Lab",    "type": "LAB",       "x": 800, "y": 340 },
+    { "id": "lab2",      "label": "Electronics Lab", "type": "LAB",       "x": 800, "y": 160 },
+
+    { "id": "seminar1",  "label": "Seminar Hall",    "type": "SEMINAR",   "x": 250, "y":  60 },
+    { "id": "office1",   "label": "HOD Office",      "type": "OFFICE",    "x": 650, "y": 460 },
+    { "id": "toilet1",   "label": "Restroom",        "type": "TOILET",    "x": 250, "y": 460 }
+  ],
+
+  "edges": [
+    { "from": "entrance", "to": "j1"       },
+    { "from": "j1",       "to": "j3"       },
+    { "from": "j1",       "to": "toilet1"  },
+    { "from": "j1",       "to": "office1"  },
+    { "from": "j3",       "to": "j2"       },
+    { "from": "j3",       "to": "j4"       },
+    { "from": "j2",       "to": "room101"  },
+    { "from": "j4",       "to": "lab1"     },
+    { "from": "j2",       "to": "j5"       },
+    { "from": "j3",       "to": "j6"       },
+    { "from": "j4",       "to": "j7"       },
+    { "from": "j5",       "to": "j6"       },
+    { "from": "j6",       "to": "j7"       },
+    { "from": "j5",       "to": "room102"  },
+    { "from": "j5",       "to": "seminar1" },
+    { "from": "j6",       "to": "room103"  },
+    { "from": "j7",       "to": "room104"  },
+    { "from": "j7",       "to": "lab2"     }
+  ],
+
+  "accessPoints": [
+    {
+      "id": "AP1", "ssid": "BlockA_WiFi_1", "bssid": "AA:BB:CC:DD:EE:01",
+      "x": 200, "y": 200, "txPower": -40, "pathLossExponent": 2.7
+    },
+    {
+      "id": "AP2", "ssid": "BlockA_WiFi_2", "bssid": "AA:BB:CC:DD:EE:02",
+      "x": 700, "y": 200, "txPower": -40, "pathLossExponent": 2.7
+    },
+    {
+      "id": "AP3", "ssid": "BlockA_WiFi_3", "bssid": "AA:BB:CC:DD:EE:03",
+      "x": 450, "y": 500, "txPower": -40, "pathLossExponent": 2.7
+    },
+    {
+      "id": "AP4", "ssid": "BlockA_WiFi_4", "bssid": "AA:BB:CC:DD:EE:04",
+      "x": 700, "y": 480, "txPower": -40, "pathLossExponent": 2.7
+    }
+  ]
+}
