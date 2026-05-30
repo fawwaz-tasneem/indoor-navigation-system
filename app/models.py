@@ -18,6 +18,7 @@ class NodeType(str, Enum):
     OFFICE    = "OFFICE"
     LAB       = "LAB"
     SEMINAR   = "SEMINAR"
+    LIBRARY   = "LIBRARY"
     ENTRANCE  = "ENTRANCE"
     TOILET    = "TOILET"
     STAIRCASE = "STAIRCASE"

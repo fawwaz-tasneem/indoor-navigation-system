@@ -1,70 +1,80 @@
 {
-  "buildingName": "Engineering Block A",
-  "canvasWidth": 900,
-  "canvasHeight": 600,
+  "buildingName": "Dept. of Computer Engineering, AMU",
+  "canvasWidth": 1000,
+  "canvasHeight": 620,
   "metersPerPixel": 0.05,
 
   "nodes": [
-    { "id": "entrance",  "label": "Main Entrance",   "type": "ENTRANCE",  "x": 450, "y": 560 },
 
-    { "id": "j1",        "label": "Junction 1",      "type": "CORRIDOR",  "x": 450, "y": 460 },
-    { "id": "j2",        "label": "Junction 2",      "type": "CORRIDOR",  "x": 250, "y": 340 },
-    { "id": "j3",        "label": "Junction 3",      "type": "CORRIDOR",  "x": 450, "y": 340 },
-    { "id": "j4",        "label": "Junction 4",      "type": "CORRIDOR",  "x": 650, "y": 340 },
-    { "id": "j5",        "label": "Junction 5",      "type": "CORRIDOR",  "x": 250, "y": 160 },
-    { "id": "j6",        "label": "Junction 6",      "type": "CORRIDOR",  "x": 450, "y": 160 },
-    { "id": "j7",        "label": "Junction 7",      "type": "CORRIDOR",  "x": 650, "y": 160 },
+    { "id": "entrance",   "label": "Main Entrance",    "type": "ENTRANCE",  "x": 800, "y": 560 },
 
-    { "id": "room101",   "label": "Room 101",        "type": "CLASSROOM", "x": 100, "y": 340 },
-    { "id": "room102",   "label": "Room 102",        "type": "CLASSROOM", "x": 100, "y": 160 },
-    { "id": "room103",   "label": "Room 103",        "type": "CLASSROOM", "x": 450, "y":  60 },
-    { "id": "room104",   "label": "Room 104",        "type": "CLASSROOM", "x": 650, "y":  60 },
+    { "id": "h1",         "label": "Corridor",         "type": "CORRIDOR",  "x":  80, "y": 220 },
+    { "id": "h2",         "label": "Corridor",         "type": "CORRIDOR",  "x": 250, "y": 220 },
+    { "id": "h3",         "label": "Corridor",         "type": "CORRIDOR",  "x": 420, "y": 220 },
+    { "id": "h4",         "label": "Corridor",         "type": "CORRIDOR",  "x": 590, "y": 220 },
+    { "id": "corner",     "label": "Corridor",         "type": "CORRIDOR",  "x": 800, "y": 220 },
+    { "id": "v1",         "label": "Corridor",         "type": "CORRIDOR",  "x": 800, "y": 360 },
+    { "id": "v2",         "label": "Corridor",         "type": "CORRIDOR",  "x": 800, "y": 480 },
 
-    { "id": "lab1",      "label": "Computer Lab",    "type": "LAB",       "x": 800, "y": 340 },
-    { "id": "lab2",      "label": "Electronics Lab", "type": "LAB",       "x": 800, "y": 160 },
+    { "id": "hod",        "label": "HOD's Office",     "type": "OFFICE",    "x":  80, "y":  90 },
+    { "id": "staff",      "label": "Staff Room",       "type": "OFFICE",    "x": 250, "y":  90 },
+    { "id": "seminar",    "label": "Seminar Hall",     "type": "SEMINAR",   "x": 420, "y":  90 },
+    { "id": "library",    "label": "Dept. Library",    "type": "LIBRARY",   "x": 590, "y":  90 },
 
-    { "id": "seminar1",  "label": "Seminar Hall",    "type": "SEMINAR",   "x": 250, "y":  60 },
-    { "id": "office1",   "label": "HOD Office",      "type": "OFFICE",    "x": 650, "y": 460 },
-    { "id": "toilet1",   "label": "Restroom",        "type": "TOILET",    "x": 250, "y": 460 }
+    { "id": "cr1",        "label": "Classroom 1",      "type": "CLASSROOM", "x":  80, "y": 350 },
+    { "id": "cr2",        "label": "Classroom 2",      "type": "CLASSROOM", "x": 250, "y": 350 },
+    { "id": "comp_lab1",  "label": "Computer Lab I",   "type": "LAB",       "x": 420, "y": 350 },
+    { "id": "comp_lab2",  "label": "Computer Lab II",  "type": "LAB",       "x": 590, "y": 350 },
+
+    { "id": "net_lab",    "label": "Networking Lab",   "type": "LAB",       "x": 660, "y": 360 },
+    { "id": "server",     "label": "Server Room",      "type": "LAB",       "x": 920, "y": 360 },
+
+    { "id": "research",   "label": "Research Lab",     "type": "LAB",       "x": 660, "y": 480 },
+    { "id": "toilet",     "label": "Restroom",         "type": "TOILET",    "x": 920, "y": 480 }
+
   ],
 
   "edges": [
-    { "from": "entrance", "to": "j1"       },
-    { "from": "j1",       "to": "j3"       },
-    { "from": "j1",       "to": "toilet1"  },
-    { "from": "j1",       "to": "office1"  },
-    { "from": "j3",       "to": "j2"       },
-    { "from": "j3",       "to": "j4"       },
-    { "from": "j2",       "to": "room101"  },
-    { "from": "j4",       "to": "lab1"     },
-    { "from": "j2",       "to": "j5"       },
-    { "from": "j3",       "to": "j6"       },
-    { "from": "j4",       "to": "j7"       },
-    { "from": "j5",       "to": "j6"       },
-    { "from": "j6",       "to": "j7"       },
-    { "from": "j5",       "to": "room102"  },
-    { "from": "j5",       "to": "seminar1" },
-    { "from": "j6",       "to": "room103"  },
-    { "from": "j7",       "to": "room104"  },
-    { "from": "j7",       "to": "lab2"     }
+    { "from": "h1",      "to": "h2"       },
+    { "from": "h2",      "to": "h3"       },
+    { "from": "h3",      "to": "h4"       },
+    { "from": "h4",      "to": "corner"   },
+    { "from": "corner",  "to": "v1"       },
+    { "from": "v1",      "to": "v2"       },
+    { "from": "v2",      "to": "entrance" },
+
+    { "from": "h1",      "to": "hod"      },
+    { "from": "h2",      "to": "staff"    },
+    { "from": "h3",      "to": "seminar"  },
+    { "from": "h4",      "to": "library"  },
+
+    { "from": "h1",      "to": "cr1"      },
+    { "from": "h2",      "to": "cr2"      },
+    { "from": "h3",      "to": "comp_lab1"},
+    { "from": "h4",      "to": "comp_lab2"},
+
+    { "from": "v1",      "to": "net_lab"  },
+    { "from": "v1",      "to": "server"   },
+    { "from": "v2",      "to": "research" },
+    { "from": "v2",      "to": "toilet"   }
   ],
 
   "accessPoints": [
     {
-      "id": "AP1", "ssid": "BlockA_WiFi_1", "bssid": "AA:BB:CC:DD:EE:01",
-      "x": 200, "y": 200, "txPower": -40, "pathLossExponent": 2.7
+      "id": "AP1", "ssid": "AMU-CE-WiFi-1", "bssid": "AA:BB:CC:DD:EE:01",
+      "x": 170, "y": 150, "txPower": -40, "pathLossExponent": 2.7
     },
     {
-      "id": "AP2", "ssid": "BlockA_WiFi_2", "bssid": "AA:BB:CC:DD:EE:02",
-      "x": 700, "y": 200, "txPower": -40, "pathLossExponent": 2.7
+      "id": "AP2", "ssid": "AMU-CE-WiFi-2", "bssid": "AA:BB:CC:DD:EE:02",
+      "x": 680, "y": 150, "txPower": -40, "pathLossExponent": 2.7
     },
     {
-      "id": "AP3", "ssid": "BlockA_WiFi_3", "bssid": "AA:BB:CC:DD:EE:03",
-      "x": 450, "y": 500, "txPower": -40, "pathLossExponent": 2.7
+      "id": "AP3", "ssid": "AMU-CE-WiFi-3", "bssid": "AA:BB:CC:DD:EE:03",
+      "x": 170, "y": 410, "txPower": -40, "pathLossExponent": 2.7
     },
     {
-      "id": "AP4", "ssid": "BlockA_WiFi_4", "bssid": "AA:BB:CC:DD:EE:04",
-      "x": 700, "y": 480, "txPower": -40, "pathLossExponent": 2.7
+      "id": "AP4", "ssid": "AMU-CE-WiFi-4", "bssid": "AA:BB:CC:DD:EE:04",
+      "x": 860, "y": 420, "txPower": -40, "pathLossExponent": 2.7
     }
   ]
 }

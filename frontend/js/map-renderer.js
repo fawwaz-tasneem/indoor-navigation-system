@@ -9,16 +9,17 @@
  */
 const MapRenderer = (() => {
 
-  // ── colour map ──────────────────────────────────────────────────────────
+  // ── colour map (AMU palette) ─────────────────────────────────────────────
   const NODE_COLOURS = {
-    CORRIDOR:  '#4a5568',
-    CLASSROOM: '#4f8ef7',
-    LAB:       '#7c5cbf',
-    SEMINAR:   '#f7c94f',
-    OFFICE:    '#3ecf8e',
-    ENTRANCE:  '#f76b4f',
-    TOILET:    '#8892a4',
-    STAIRCASE: '#e88c2a'
+    CORRIDOR:  '#1C3A25',   // dark green
+    CLASSROOM: '#2D7248',   // AMU primary green
+    LAB:       '#7A1515',   // AMU deep maroon
+    LIBRARY:   '#4A6B3A',   // muted green
+    SEMINAR:   '#8B6914',   // dark gold
+    OFFICE:    '#1E5C35',   // medium green
+    ENTRANCE:  '#8B1A1A',   // AMU maroon
+    TOILET:    '#3A5445',   // muted dark green
+    STAIRCASE: '#7A5A10'    // dark amber
   };
 
   const NODE_RADIUS   = 10;
@@ -82,7 +83,7 @@ const MapRenderer = (() => {
     if (!mapConfig) return;
     const nodeMap = buildNodeMap();
 
-    ctx.strokeStyle = '#2e3450';
+    ctx.strokeStyle = '#1C3A25';
     ctx.lineWidth   = 2;
 
     for (const edge of mapConfig.edges) {
@@ -99,7 +100,7 @@ const MapRenderer = (() => {
   function drawPathEdges() {
     if (currentPath.length < 2) return;
 
-    ctx.strokeStyle = '#4f8ef7';
+    ctx.strokeStyle = '#C8961A';   // AMU gold for the active path
     ctx.lineWidth   = 4;
     ctx.setLineDash([8, 4]);
 
@@ -124,14 +125,14 @@ const MapRenderer = (() => {
       if (onPath) {
         ctx.beginPath();
         ctx.arc(node.x, node.y, NODE_RADIUS + 5, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(79,142,247,0.25)';
+        ctx.fillStyle = 'rgba(200,150,26,0.22)';   // gold glow
         ctx.fill();
       }
 
       ctx.beginPath();
       ctx.arc(node.x, node.y, NODE_RADIUS, 0, Math.PI * 2);
       ctx.fillStyle   = colour;
-      ctx.strokeStyle = onPath ? '#4f8ef7' : '#0f1117';
+      ctx.strokeStyle = onPath ? '#C8961A' : '#060D07';
       ctx.lineWidth   = onPath ? 2.5 : 1.5;
       ctx.fill();
       ctx.stroke();
@@ -139,7 +140,7 @@ const MapRenderer = (() => {
       // Label — only for named rooms (not plain corridors)
       if (node.type !== 'CORRIDOR') {
         ctx.font      = '11px Segoe UI, sans-serif';
-        ctx.fillStyle = '#e2e8f0';
+        ctx.fillStyle = onPath ? '#C8961A' : '#EDE8DC';
         ctx.textAlign = 'center';
         ctx.fillText(node.label, node.x, node.y + NODE_RADIUS + LABEL_OFFSET);
       }
@@ -155,8 +156,8 @@ const MapRenderer = (() => {
       ctx.rotate(Math.PI / 4);
       ctx.beginPath();
       ctx.rect(-AP_RADIUS, -AP_RADIUS, AP_RADIUS * 2, AP_RADIUS * 2);
-      ctx.fillStyle   = '#f76b4f';
-      ctx.strokeStyle = '#0f1117';
+      ctx.fillStyle   = '#C8961A';   // AMU gold diamond for APs
+      ctx.strokeStyle = '#060D07';
       ctx.lineWidth   = 1.5;
       ctx.fill();
       ctx.stroke();
@@ -164,7 +165,7 @@ const MapRenderer = (() => {
 
       // WiFi symbol label
       ctx.font      = '10px Segoe UI, sans-serif';
-      ctx.fillStyle = '#f76b4f';
+      ctx.fillStyle = '#C8961A';   // AMU gold
       ctx.textAlign = 'center';
       ctx.fillText(ap.id, ap.x, ap.y + AP_RADIUS + 14);
     }
@@ -177,8 +178,8 @@ const MapRenderer = (() => {
     if (uncertainty > 0) {
       ctx.beginPath();
       ctx.arc(x, y, uncertainty, 0, Math.PI * 2);
-      ctx.fillStyle   = 'rgba(79,142,247,0.12)';
-      ctx.strokeStyle = 'rgba(79,142,247,0.4)';
+      ctx.fillStyle   = 'rgba(45,114,72,0.15)';    // green tint
+      ctx.strokeStyle = 'rgba(45,114,72,0.45)';
       ctx.lineWidth   = 1;
       ctx.fill();
       ctx.stroke();
@@ -188,15 +189,15 @@ const MapRenderer = (() => {
     ctx.beginPath();
     ctx.arc(x, y, 8, 0, Math.PI * 2);
     ctx.fillStyle   = '#ffffff';
-    ctx.strokeStyle = '#4f8ef7';
+    ctx.strokeStyle = '#3D9E68';   // AMU green border
     ctx.lineWidth   = 3;
     ctx.fill();
     ctx.stroke();
 
-    // Pulse ring (static — animated version would use requestAnimationFrame)
+    // Pulse ring
     ctx.beginPath();
     ctx.arc(x, y, 16, 0, Math.PI * 2);
-    ctx.strokeStyle = 'rgba(79,142,247,0.5)';
+    ctx.strokeStyle = 'rgba(61,158,104,0.5)';
     ctx.lineWidth   = 1.5;
     ctx.stroke();
   }
