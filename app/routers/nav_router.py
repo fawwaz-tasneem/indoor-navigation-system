@@ -31,7 +31,8 @@ Key Software Engineering Design Decisions:
 
 4. Semantic HTTP Status Protocols:
    - Avoids generic server errors by responding with precise, actionable status codes 
-     (e.g., 204 No Content for poor coverage, 404 Not Found for missing coordinates).
+    (e.g., 422 Unprocessable Entity for insufficient AP coverage, 404 Not Found for missing coordinates).
+.
 """
 
 router = APIRouter()
@@ -52,7 +53,7 @@ async def localise(req: LocaliseRequest):
     svc    = get_navigation_service(req.session_id)
     result = svc.localise(req.rssi, req.dt)
     if result.ekf is None and result.kf is None:
-        raise HTTPException(status_code=204, detail="Not enough measurements")
+        raise HTTPException(status_code=422, detail="Not enough measurements, fewer than 3 known APs visible")
     return result.model_dump(by_alias=True)
 
 

@@ -23,7 +23,7 @@ const Api = {
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ rssi: rssiMap, dt })
     });
-    if (res.status === 204 || res.status === 422) return null;
+    if (res.status === 422) return null;
     if (!res.ok) throw new Error('Localise request failed');
     return res.json();   // { ekf: { x, y, uncertainty }, kf: { x, y, uncertainty } }
   },
