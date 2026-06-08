@@ -104,7 +104,7 @@
 
     let result;
     try {
-      result = await Api.localise(rssiMap, 1.0);
+      result = await Api.localise(rssiMap);
     } catch (err) {
       alert('Localisation failed: ' + err.message);
       return;

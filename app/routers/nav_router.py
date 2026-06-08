@@ -42,7 +42,6 @@ router = APIRouter()
 
 class LocaliseRequest(BaseModel):
     rssi:       Dict[str, float]   # { bssid: rssi_dbm }
-    dt:         float = 1.0
     session_id: str   = "default"  # unique per client; "default" for single-user demo
 
 # ── routes ────────────────────────────────────────────────────────────────────
@@ -51,7 +50,7 @@ class LocaliseRequest(BaseModel):
 @router.post("/localise")
 async def localise(req: LocaliseRequest):
     svc    = get_navigation_service(req.session_id)
-    result = svc.localise(req.rssi, req.dt)
+    result = svc.localise(req.rssi)
     if result.ekf is None and result.kf is None:
         raise HTTPException(status_code=422, detail="Not enough measurements, fewer than 3 known APs visible")
     return result.model_dump(by_alias=True)

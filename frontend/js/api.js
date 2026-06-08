@@ -17,11 +17,11 @@ const Api = {
    * @param {Object.<string,number>} rssiMap  { bssid: rssiDbm }
    * @param {number}                 dt       seconds since last call
    */
-  async localise(rssiMap, dt = 1.0) {
+  async localise(rssiMap) {
     const res = await fetch(`${API_BASE}/api/nav/localise`, {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ rssi: rssiMap, dt })
+      body:    JSON.stringify({ rssi: rssiMap })
     });
     if (res.status === 422) return null;
     if (!res.ok) throw new Error('Localise request failed');

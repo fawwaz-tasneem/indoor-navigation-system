@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import math
 from typing import Dict, List, Optional
+import time
 
 from app.core.kf import KalmanFilter
 from app.core.ekf import ExtendedKalmanFilter
@@ -18,10 +19,11 @@ class NavigationService:
         self._ekf = ExtendedKalmanFilter(process_noise=1.0, measurement_noise=2.0)      # measurement_noise in meters
         self._kf = KalmanFilter(process_noise=1.0, measurement_noise=30.0)              # measurement_noise in pixels
         self._pathfinder: Optional[PathFinder] = None
+        self._last_time: Optional[float] = None                                         # time stamp of last localise call
 
     # ── localisation ──────────────────────────────────────────────────────────
 
-    def localise(self, rssi_readings: Dict[str, float], dt: float = 1.0) -> LocalisationResult:
+    def localise(self, rssi_readings: Dict[str, float]) -> LocalisationResult:
         """
         Accept { bssid: rssi_dbm } readings and run both filters in parallel.
 
@@ -38,7 +40,21 @@ class NavigationService:
 
         Returns LocalisationResult with both estimates (either may be None if
         the respective filter has not yet been initialised).
+
+        dt is computed server-side from a monotonic clock so the filter's
+        predict step reflects real elapsed time rather than a client-supplied value.
+        A floor of 0.01 s prevents near-zero dt; a ceiling of 10 s prevents Q
+        from blowing up when the client goes idle between calls
         """
+
+        now = time.monotonic()
+        if self._last_time is None:
+            dt = 1.0   # first call: use a neutral default
+        else:
+            dt = now - self._last_time
+            dt = min(max(dt, 0.01), 10.0)
+        self._last_time = now
+
         # Fetch the active floor map configuration profile
         cfg = self._map.get_config()            
         # Pivot the access point list into a dictionary for O(1) high-speed BSSID lookups
@@ -75,6 +91,7 @@ class NavigationService:
     def reset_filters(self) -> None:
         self._ekf.reset()
         self._kf.reset()
+        self._last_time = None 
 
     # ── pathfinding ───────────────────────────────────────────────────────────
 
