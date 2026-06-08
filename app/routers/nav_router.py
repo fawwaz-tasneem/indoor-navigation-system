@@ -40,9 +40,9 @@ router = APIRouter()
 # ── request schema ────────────────────────────────────────────────────────────
 
 class LocaliseRequest(BaseModel):
-    rssi: Dict[str, float]   # { bssid: rssi_dbm }
-    dt:   float = 1.0
-
+    rssi:       Dict[str, float]   # { bssid: rssi_dbm }
+    dt:         float = 1.0
+    session_id: str   = "default"  # unique per client; "default" for single-user demo
 
 # ── routes ────────────────────────────────────────────────────────────────────
 
