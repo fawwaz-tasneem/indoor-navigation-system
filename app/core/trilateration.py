@@ -56,10 +56,14 @@ def solve(measurements: List[Measurement], meters_per_pixel: float) -> Optional[
     AtWA = A.T @ W @ A   # (2, 2)
     AtWb = A.T @ W @ b   # (2,)
 
-    try:
-        pos_m = np.linalg.solve(AtWA, AtWb)   # position in metres
-    except np.linalg.LinAlgError:
-        return None
+    # np.linalg.solve raises only on exactly singular systems; near-singular
+    # geometry (e.g. all APs on one wall) returns silently wrong results.
+    # lstsq computes the minimum-norm least-squares solution and reports the
+    # numerical rank so degenerate AP layouts are caught explicitly.
+    pos_m, _, rank, _ = np.linalg.lstsq(AtWA, AtWb, rcond=None)
+    if rank < 2:
+        return None   # degenerate geometry: APs are collinear or coincident
+
 
     # RMS residual → uncertainty in pixels
     diffs    = np.linalg.norm(positions - pos_m, axis=1) - distances

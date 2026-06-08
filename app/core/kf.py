@@ -69,22 +69,40 @@ class KalmanFilter:
         self._x = F @ self._x
         self._P = F @ self._P @ F.T + Q
 
-    def update(self, mx: float, my: float) -> None: # mx and my are the coords recieved from the trilateration
+    def update(self, mx: float, my: float) -> bool:
+        """
+        Update state from a trilaterated (x, y) position measurement.
+        Returns True if accepted, False if rejected by the NIS gate.
+        """
         if self._x is None:
             self.initialise(mx, my)
-            return
+            return True
 
-        H = np.array([[1, 0, 0, 0],                 # Measurement Matrix H
+        H = np.array([[1, 0, 0, 0],
                       [0, 1, 0, 0]], dtype=float)
-        R = np.eye(2) * (self._mn ** 2)             # Measurement Noise Covariance (squaring the SD)
+        R = np.eye(2) * (self._mn ** 2)
 
-        z = np.array([mx, my])                  # measurment
-        y = z - H @ self._x                    # innovation
-        S = H @ self._P @ H.T + R              # innovation covariance
-        K = self._P @ H.T @ np.linalg.inv(S)  # Kalman gain  (4×2)
+        z     = np.array([mx, my])
+        y     = z - H @ self._x               # innovation
+        S     = H @ self._P @ H.T + R         # innovation covariance
 
-        self._x = self._x + K @ y
-        self._P = (np.eye(4) - K @ H) @ self._P     # Mathematically equivalent to P = P - K @ S @ K.T (less computations), but Joseph form better
+        # NIS outlier gate — measurement DOF is always 2 (x, y), so the
+        # threshold is chi²(0.95, dof=2) = 5.99.  A trilaterated fix whose
+        # NIS exceeds this is likely a corrupted RSSI scan; discard it.
+        S_inv = np.linalg.inv(S)
+        if float(y @ S_inv @ y) > 5.99:
+            return False
+
+        K         = self._P @ H.T @ S_inv     # Kalman gain (4×2)
+        self._x   = self._x + K @ y
+
+        # Joseph form: P = (I-KH) P (I-KH)^T + K R K^T
+        # Keeps P symmetric positive-definite under floating-point accumulation,
+        # unlike the simpler P = (I-KH) P which can drift asymmetric over time.
+        I_KH    = np.eye(4) - K @ H
+        self._P = I_KH @ self._P @ I_KH.T + K @ R @ K.T
+
+        return True
 
     @property
     def position(self) -> Optional[Position]:
