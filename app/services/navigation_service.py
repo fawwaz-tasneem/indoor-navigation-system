@@ -21,7 +21,7 @@ class NavigationService:
 
     # ── localisation ──────────────────────────────────────────────────────────
 
-    def localise(self, rssi_readings: Dict[str, float], dt: float = 1.0) -> Optional[Position]:
+    def localise(self, rssi_readings: Dict[str, float], dt: float = 1.0) -> LocalisationResult:
         """
         Accept { bssid: rssi_dbm } readings and run both filters in parallel.
 

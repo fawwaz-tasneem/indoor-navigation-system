@@ -56,14 +56,15 @@ class KalmanFilter:
             [0, 0,  0,  1],
         ], dtype=float)
 
-        # Using a piecewise constant white acceleration model (PCWNA)
-        q = self._pn * dt
-        Q = np.array([
-            [q * dt*dt / 4,           0, q * dt / 2,          0],
-            [           0, q * dt*dt / 4,          0, q * dt / 2],
-            [  q * dt / 2,           0,          q,          0],
-            [           0,  q * dt / 2,          0,          q],
+        # PCWNA model: Q = q * [[dt⁴/4, dt³/2], [dt³/2, dt²]] per axis
+        q = self._pn
+        Q = q * np.array([
+            [dt**4/4,       0, dt**3/2,       0],
+            [      0, dt**4/4,       0, dt**3/2],
+            [dt**3/2,       0,   dt**2,       0],
+            [      0, dt**3/2,       0,   dt**2],
         ])
+
 
         self._x = F @ self._x
         self._P = F @ self._P @ F.T + Q
