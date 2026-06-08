@@ -16,8 +16,19 @@ from app.services.map_service import MapService
 class NavigationService:
     def __init__(self, map_service: MapService) -> None:
         self._map = map_service
-        self._ekf = ExtendedKalmanFilter(process_noise=1.0, measurement_noise=2.0)      # measurement_noise in meters
-        self._kf = KalmanFilter(process_noise=1.0, measurement_noise=30.0)              # measurement_noise in pixels
+        # Both filters share q = 300 px²/s³ = 0.75 m²/s³ (PCWNA spectral density).
+        # σ_position ≈ √(q·T³/3) ≈ 0.5 m after 1 s — matches pedestrian dynamics.
+        #
+        # EKF uses range-proportional R (heteroscedastic):
+        #   σ_range(d) = d · ln(10)/(10·n) · σ_RSSI  (≈ ±21 % of the predicted range)
+        #   At 10 m: σ ≈ 2.1 m; at 25 m: σ ≈ 5.3 m.
+        #   R is rebuilt each update so far APs (noisy) don't inflate NIS.
+        #
+        # KF  measurement_noise = 100 px = 5 m (post-trilateration position σ).
+        #   Larger than per-AP σ because the 4-corner AP geometry has poor DOP
+        #   in the building interior, amplifying individual range errors.
+        self._ekf = ExtendedKalmanFilter(process_noise=300.0, path_loss_n=2.7, rssi_sigma_dbm=2.5)
+        self._kf  = KalmanFilter(process_noise=300.0, measurement_noise=100.0)
         self._pathfinder: Optional[PathFinder] = None
         self._last_time: Optional[float] = None                                         # time stamp of last localise call  
         self._ekf_consec_rejections: int    = 0
@@ -86,10 +97,9 @@ class NavigationService:
             self._ekf_consec_rejections = 0
         else:
             self._ekf_consec_rejections += 1
-            # 3 consecutive NIS rejections means the filter has diverged
-            # (e.g. the user jumped to a new position). Reinitialise from
-            # trilateration so the EKF recovers rather than staying stuck.
-            if self._ekf_consec_rejections >= 3 and trilat is not None:
+            # 15 consecutive rejections ≈ 1.5 s at 10 Hz — genuine divergence,
+            # not a random noise spike (3 steps at 10 Hz was only 0.3 s).
+            if self._ekf_consec_rejections >= 15 and trilat is not None:
                 self._ekf.initialise(trilat.x, trilat.y)
                 self._ekf_consec_rejections = 0
 

@@ -29,10 +29,12 @@ class KalmanFilter:
     per AP directly.
     """
 
-    def __init__(self, process_noise: float = 1.0, measurement_noise: float = 30.0):
+    def __init__(self, process_noise: float = 300.0, measurement_noise: float = 100.0):
 
-        # measurement_noise: expected trilateration error in pixels
-        # (30 px × 0.05 m/px ≈ 1.5 m is a representative indoor WiFi error)
+        # measurement_noise: expected trilateration position error in pixels
+        # (100 px × 0.05 m/px = 5 m).  Trilateration amplifies per-AP range errors
+        # via the geometry's DOP; with 4 APs in corner positions and σ_range 2–5 m,
+        # post-trilateration σ_position of 4–6 m is typical.
 
         self._pn = process_noise       # Q tuning: trust in constant-velocity model
         self._mn = measurement_noise   # R tuning: trilateration noise (pixels)
