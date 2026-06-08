@@ -19,7 +19,8 @@ class NavigationService:
         self._ekf = ExtendedKalmanFilter(process_noise=1.0, measurement_noise=2.0)      # measurement_noise in meters
         self._kf = KalmanFilter(process_noise=1.0, measurement_noise=30.0)              # measurement_noise in pixels
         self._pathfinder: Optional[PathFinder] = None
-        self._last_time: Optional[float] = None                                         # time stamp of last localise call
+        self._last_time: Optional[float] = None                                         # time stamp of last localise call  
+        self._ekf_consec_rejections: int    = 0
 
     # ── localisation ──────────────────────────────────────────────────────────
 
@@ -78,8 +79,20 @@ class NavigationService:
         if not self._ekf.is_initialised and trilat is not None:
             self._ekf.initialise(trilat.x, trilat.y)
 
+        # new
         self._ekf.predict(dt)
-        self._ekf.update(raw, cfg.meters_per_pixel)
+        accepted = self._ekf.update(raw, cfg.meters_per_pixel)
+        if accepted:
+            self._ekf_consec_rejections = 0
+        else:
+            self._ekf_consec_rejections += 1
+            # 3 consecutive NIS rejections means the filter has diverged
+            # (e.g. the user jumped to a new position). Reinitialise from
+            # trilateration so the EKF recovers rather than staying stuck.
+            if self._ekf_consec_rejections >= 3 and trilat is not None:
+                self._ekf.initialise(trilat.x, trilat.y)
+                self._ekf_consec_rejections = 0
+
 
         # ── KF (comparison baseline) ───────────────────────────────────────────
         self._kf.predict(dt)
@@ -88,10 +101,13 @@ class NavigationService:
 
         return LocalisationResult(ekf=self._ekf.position, kf=self._kf.position)
 
+    # new
     def reset_filters(self) -> None:
         self._ekf.reset()
         self._kf.reset()
-        self._last_time = None 
+        self._last_time             = None
+        self._ekf_consec_rejections = 0
+
 
     # ── pathfinding ───────────────────────────────────────────────────────────
 

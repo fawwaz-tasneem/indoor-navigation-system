@@ -29,8 +29,9 @@ app.include_router(nav_router.router, prefix="/api/nav", tags=["navigation"])
 # ── Static frontend files ─────────────────────────────────────────────────────
 _FRONTEND = Path(__file__).parent / "frontend"
 
-app.mount("/css", StaticFiles(directory=_FRONTEND / "css"), name="css")
-app.mount("/js",  StaticFiles(directory=_FRONTEND / "js"),  name="js")
+app.mount("/css",  StaticFiles(directory=_FRONTEND / "css"),                name="css")
+app.mount("/js",   StaticFiles(directory=_FRONTEND / "js"),                 name="js")
+app.mount("/maps", StaticFiles(directory=Path(__file__).parent / "maps"),   name="maps")
 
 
 @app.get("/", include_in_schema=False)

@@ -30,7 +30,9 @@
         <span class="legend-dot office"></span>Office
         <span class="legend-dot entrance"></span>Entrance
         <span class="legend-dot ap"></span>Access Point
-        <span class="legend-dot position"></span>You
+        <span class="legend-dot ekf-pos"></span>EKF
+        <span class="legend-dot kf-pos"></span>KF
+        <span class="legend-dot gt-pos"></span>Ground Truth
       </div>
     </section>
 
@@ -55,19 +57,53 @@
 
       <section class="card">
         <h2>Simulate RSSI</h2>
-        <p class="small">Drag the dot on the map, or enter RSSI values manually.</p>
+        <p class="small">Click the map to auto-compute RSSI, or drag the sliders manually.</p>
         <div id="ap-sliders"></div>
         <button id="btn-localise">Localise</button>
       </section>
 
       <section class="card">
+        <h2>Filter Comparison</h2>
+        <table class="stats-table">
+          <thead>
+            <tr><th></th><th>EKF</th><th>KF</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Current error</td>
+              <td id="ekf-error">—</td>
+              <td id="kf-error">—</td>
+            </tr>
+            <tr>
+              <td>RMSE (trajectory)</td>
+              <td id="ekf-rmse">—</td>
+              <td id="kf-rmse">—</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="small" style="margin-top:8px">Click canvas for interactive error. Play trajectory for RMSE.</p>
+      </section>
+
+      <section class="card">
+        <h2>Trajectory Replay</h2>
+        <p class="small">Entrance → Seminar Hall · simulated RSSI noise σ = 2.5 dBm.</p>
+        <div style="display:flex; gap:8px; margin-top:8px">
+          <button id="btn-play" style="flex:1; margin-top:0">&#9654; Play</button>
+          <button id="btn-stop" style="flex:1; margin-top:0" disabled>&#9632; Stop</button>
+        </div>
+        <p class="small" id="traj-progress" style="display:none; margin-top:6px">
+          Step <span id="traj-step">0</span> / <span id="traj-total">0</span>
+        </p>
+      </section>
+
+      <section class="card">
         <h2>How It Works</h2>
         <ol class="small">
-          <li>Three or more WiFi APs report RSSI.</li>
-          <li>Log-distance model converts RSSI → distance.</li>
-          <li>Weighted least-squares trilateration estimates position.</li>
-          <li>Extended Kalman Filter smooths the estimate over time.</li>
-          <li>Dijkstra's algorithm finds shortest path on the node graph.</li>
+          <li>WiFi APs report RSSI → log-distance model → range per AP (metres).</li>
+          <li><strong style="color:#3D9E68">EKF (primary):</strong> raw ranges fused via nonlinear measurement model h<sub>i</sub>(x)&nbsp;= mpp·‖pos&nbsp;−&nbsp;AP<sub>i</sub>‖; Jacobian linearised at each step.</li>
+          <li><strong style="color:#6495ED">KF (baseline):</strong> ranges collapsed to (x,&nbsp;y) by weighted least-squares trilateration, then fused by a linear KF.</li>
+          <li>Both filters run in parallel; RMSE over a trajectory quantifies the gain from the nonlinear model.</li>
+          <li>Dijkstra's algorithm finds the shortest path on the node graph.</li>
         </ol>
       </section>
 

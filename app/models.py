@@ -53,6 +53,16 @@ class AccessPoint(_CamelModel):
     path_loss_exponent:  float = 2.7
 
 
+class Room(_CamelModel):
+    """Axis-aligned rectangle representing a room or corridor on the floor plan."""
+    id:   str
+    x:    float
+    y:    float
+    w:    float   # width in pixels
+    h:    float   # height in pixels
+    type: NodeType
+
+
 class MapConfig(_CamelModel):
     building_name:    str
     canvas_width:     int
@@ -61,6 +71,7 @@ class MapConfig(_CamelModel):
     nodes:            List[NavNode]
     edges:            List[NavEdge]
     access_points:    List[AccessPoint]
+    rooms:            List[Room] = []
 
 
 class Position(_CamelModel):

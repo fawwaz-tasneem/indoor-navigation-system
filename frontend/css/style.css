@@ -243,7 +243,38 @@ ol.small li { margin-bottom: 4px; }
 .legend-dot.entrance  { background: #8B1A1A; }
 .legend-dot.toilet    { background: #3A5445; }
 .legend-dot.ap        { background: #C8961A; }
-.legend-dot.position  { background: #fff; border: 2px solid #2D7248; }
+.legend-dot.ekf-pos   { background: #ffffff; border: 2px solid #3D9E68; }
+.legend-dot.kf-pos    { background: #6495ED; border: 2px solid #1a3a6e; }
+.legend-dot.gt-pos    { background: transparent; border: 2px solid #C8961A; }
+
+/* ── Filter comparison table ─────────────────────────────── */
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  margin-top: 4px;
+}
+.stats-table th {
+  color: var(--muted);
+  font-weight: 600;
+  text-align: left;
+  padding: 3px 6px;
+  border-bottom: 1px solid var(--border);
+}
+.stats-table td {
+  padding: 5px 6px;
+  color: var(--text);
+}
+.stats-table td:first-child  { color: var(--muted); }
+.stats-table td:nth-child(2) { color: #3D9E68; font-weight: 600; }
+.stats-table td:nth-child(3) { color: #6495ED; font-weight: 600; }
+
+button:disabled {
+  background: var(--surface2);
+  color: var(--muted);
+  cursor: not-allowed;
+}
+button:disabled:hover { background: var(--surface2); }
 
 /* ── Responsive ──────────────────────────────────────────── */
 @media (max-width: 720px) {

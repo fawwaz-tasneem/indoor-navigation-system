@@ -76,5 +76,27 @@
       "id": "AP4", "ssid": "AMU-CE-WiFi-4", "bssid": "AA:BB:CC:DD:EE:04",
       "x": 860, "y": 420, "txPower": -40, "pathLossExponent": 2.7
     }
+  ],
+
+  "rooms": [
+    { "id": "room_hod",     "x":  15, "y":   5, "w": 130, "h": 185, "type": "OFFICE"    },
+    { "id": "room_staff",   "x": 185, "y":   5, "w": 130, "h": 185, "type": "OFFICE"    },
+    { "id": "room_seminar", "x": 355, "y":   5, "w": 130, "h": 185, "type": "SEMINAR"   },
+    { "id": "room_library", "x": 525, "y":   5, "w": 130, "h": 185, "type": "LIBRARY"   },
+
+    { "id": "corr_h",       "x":   0, "y": 190, "w": 835, "h":  60, "type": "CORRIDOR"  },
+    { "id": "corr_v",       "x": 765, "y": 190, "w":  70, "h": 425, "type": "CORRIDOR"  },
+
+    { "id": "room_cr1",     "x":  15, "y": 250, "w": 130, "h": 165, "type": "CLASSROOM" },
+    { "id": "room_cr2",     "x": 185, "y": 250, "w": 130, "h": 165, "type": "CLASSROOM" },
+    { "id": "room_lab1",    "x": 355, "y": 250, "w": 130, "h": 165, "type": "LAB"       },
+    { "id": "room_lab2",    "x": 525, "y": 250, "w": 130, "h": 165, "type": "LAB"       },
+    { "id": "room_net",     "x": 655, "y": 250, "w": 110, "h": 165, "type": "LAB"       },
+    { "id": "room_server",  "x": 835, "y": 250, "w": 150, "h": 165, "type": "LAB"       },
+
+    { "id": "room_res",     "x": 655, "y": 415, "w": 110, "h": 145, "type": "LAB"       },
+    { "id": "room_toilet",  "x": 835, "y": 415, "w": 150, "h": 145, "type": "TOILET"    },
+
+    { "id": "room_entr",    "x": 735, "y": 555, "w": 130, "h":  60, "type": "ENTRANCE"  }
   ]
 }

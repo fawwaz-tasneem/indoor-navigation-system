@@ -6,34 +6,59 @@ A WiFi-based indoor positioning and navigation system built as a 4th semester mi
 
 ## How It Works
 
-### Localisation Pipeline
+### Dual-Filter Localisation Pipeline
+
+Two filters run in parallel on every RSSI scan, letting you compare their estimates directly:
 
 ```
 WiFi RSSI readings
-      │
-      ▼
-Log-distance path loss model  →  distance estimates (metres)
-      │
-      ▼
-Weighted least-squares trilateration  →  raw position (x, y)
-      │
-      ▼
-Extended Kalman Filter  →  smoothed position + uncertainty
+        │
+        ▼
+Log-distance path loss  →  (AP_i, range_i [metres]) for each AP
+        │
+        ├─────────────────────────────────┐
+        │  EKF path (primary)             │  KF path (baseline)
+        ▼                                 ▼
+Nonlinear measurement model      Weighted least-squares
+h_i(x) = mpp · ‖pos − AP_i‖    trilateration → (x, y)
+        │                                 │
+        ▼                                 ▼
+EKF update (Jacobian H)          Linear KF update (H = [I|0])
+        │                                 │
+        ▼                                 ▼
+Smoothed position + uncertainty   Smoothed position + uncertainty
+     (green dot)                       (blue dot)
 ```
 
-1. **RSSI → Distance** — Each access point's received signal strength is converted to an estimated distance using the log-distance path loss model:
+1. **RSSI → Distance** — Each AP's received signal strength is converted to an estimated range using the log-distance path loss model:
 
    ```
-   d = 10 ^ ((TxPower - RSSI) / (10 × n))
+   d = 10 ^ ((TxPower − RSSI) / (10 × n))
    ```
 
-   where `TxPower` is the transmit power at 1 m (calibrated per AP) and `n` is the path-loss exponent (typically 2.5–3.5 indoors).
+   where `TxPower` is the transmit power at 1 m (calibrated per AP) and `n` is the path-loss exponent (typically 2.5–3.5 indoors). Both filters share this step.
 
-2. **Trilateration** — With distances to ≥ 3 APs of known position, the system solves a weighted least-squares system to find the (x, y) intersection. APs closer to the user are weighted more heavily since the path-loss model is more accurate at short range.
+2. **EKF (primary)** — A constant-velocity Extended Kalman Filter with state `[px, py, vx, vy]` fuses the raw per-AP range measurements directly. The measurement model `h_i(x) = mpp · ‖pos − AP_i‖` is nonlinear; the EKF linearises it at each time step via the Jacobian:
 
-3. **Extended Kalman Filter** — A constant-velocity EKF with state `[px, py, vx, vy]` smooths the noisy trilateration output. The predict step advances the state by `dt` seconds; the update step corrects it when a new measurement arrives.
+   ```
+   H_i = [ mpp·(px−ax_i)/r_i,  mpp·(py−ay_i)/r_i,  0,  0 ]
+   ```
 
-4. **Shortest Path** — The building is modelled as a weighted graph of nodes (rooms, corridor junctions) and edges. Dijkstra's algorithm finds the shortest path between any two nodes.
+   This eliminates the trilateration step and propagates AP geometry information into the filter. Innovations are gated with a NIS chi-squared test; after 3 consecutive rejections the filter reinitialises from the trilateration fallback.
+
+3. **KF (baseline)** — A linear Kalman Filter first collapses the per-AP ranges to a single `(x, y)` estimate via weighted least-squares trilateration (weights `w_i = 1/d_i²`), then uses a linear measurement model `H = [I | 0]` to update the same `[px, py, vx, vy]` state. This is the classical approach and serves as a comparison baseline.
+
+4. **Process model** — Both filters share a piecewise-constant white-noise-acceleration (PCWNA) predict step. The process noise matrix is:
+
+   ```
+   Q = q · [[dt⁴/4, dt³/2], [dt³/2, dt²]]   (per axis, block-diagonal)
+   ```
+
+   `dt` is measured server-side with a monotonic clock and clamped to [0.01, 10.0] s.
+
+5. **Covariance update** — Both filters use the Joseph form `P = (I−KH)P(I−KH)ᵀ + KRKᵀ` to keep `P` numerically positive semi-definite.
+
+6. **Shortest Path** — The building is modelled as a weighted graph of nodes (rooms, corridor junctions) and edges. Dijkstra's algorithm finds the shortest path between any two named nodes.
 
 ---
 
@@ -49,7 +74,8 @@ indoor-navigation-system/
 │   ├── core/
 │   │   ├── rssi.py                # Log-distance path loss model
 │   │   ├── trilateration.py       # Weighted least-squares trilateration (NumPy)
-│   │   ├── ekf.py                 # Extended Kalman Filter (NumPy)
+│   │   ├── ekf.py                 # Extended Kalman Filter — nonlinear h, Jacobian
+│   │   ├── kf.py                  # Linear Kalman Filter — trilaterated position input
 │   │   └── pathfinder.py          # Dijkstra's shortest-path
 │   ├── services/
 │   │   ├── map_service.py         # Loads and parses the map JSON
@@ -58,7 +84,8 @@ indoor-navigation-system/
 │       ├── map_router.py          # GET  /api/map
 │       └── nav_router.py          # POST /api/nav/localise · GET /path · /nearest
 ├── maps/
-│   └── sample_map.json            # Building layout — edit this to change the map
+│   ├── sample_map.json            # Building layout — nodes, edges, APs, room rectangles
+│   └── sample_trajectory.json    # Synthetic ground-truth trajectory for RMSE evaluation
 └── frontend/
     ├── index.html
     ├── css/style.css
@@ -124,9 +151,11 @@ Interactive API docs are available at **http://localhost:8000/docs**.
     "AA:BB:CC:DD:EE:02": -72,
     "AA:BB:CC:DD:EE:03": -58
   },
-  "dt": 1.0
+  "session_id": "default"
 }
 ```
+
+`dt` is no longer supplied by the client — the server measures elapsed time with a monotonic clock.
 
 ---
 
