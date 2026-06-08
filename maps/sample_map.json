@@ -17,85 +17,95 @@
     { "id": "v2",         "label": "Corridor",         "type": "CORRIDOR",  "x": 800, "y": 480 },
 
     { "id": "hod",        "label": "HOD's Office",     "type": "OFFICE",    "x":  80, "y":  90 },
-    { "id": "staff",      "label": "Staff Room",       "type": "OFFICE",    "x": 250, "y":  90 },
+    { "id": "office1",    "label": "Faculty Office 1", "type": "OFFICE",    "x": 174, "y":  90 },
+    { "id": "staff",      "label": "Faculty Office 2", "type": "OFFICE",    "x": 250, "y":  90 },
+    { "id": "office3",    "label": "Faculty Office 3", "type": "OFFICE",    "x": 324, "y":  90 },
     { "id": "seminar",    "label": "Seminar Hall",     "type": "SEMINAR",   "x": 420, "y":  90 },
     { "id": "library",    "label": "Dept. Library",    "type": "LIBRARY",   "x": 590, "y":  90 },
 
-    { "id": "cr1",        "label": "Classroom 1",      "type": "CLASSROOM", "x":  80, "y": 350 },
-    { "id": "cr2",        "label": "Classroom 2",      "type": "CLASSROOM", "x": 250, "y": 350 },
-    { "id": "comp_lab1",  "label": "Computer Lab I",   "type": "LAB",       "x": 420, "y": 350 },
-    { "id": "comp_lab2",  "label": "Computer Lab II",  "type": "LAB",       "x": 590, "y": 350 },
+    { "id": "cr1",        "label": "Lecture Hall 1",   "type": "CLASSROOM", "x":  80, "y": 355 },
+    { "id": "cr2",        "label": "Lecture Hall 2",   "type": "CLASSROOM", "x": 250, "y": 355 },
+    { "id": "comp_lab1",  "label": "Computer Lab I",   "type": "LAB",       "x": 420, "y": 355 },
+    { "id": "comp_lab2",  "label": "Computer Lab II",  "type": "LAB",       "x": 590, "y": 355 },
 
-    { "id": "net_lab",    "label": "Networking Lab",   "type": "LAB",       "x": 660, "y": 360 },
-    { "id": "server",     "label": "Server Room",      "type": "LAB",       "x": 920, "y": 360 },
+    { "id": "net_lab",    "label": "Networking Lab",   "type": "LAB",       "x": 710, "y": 360 },
+    { "id": "server",     "label": "Server Room",      "type": "LAB",       "x": 925, "y": 360 },
 
-    { "id": "research",   "label": "Research Lab",     "type": "LAB",       "x": 660, "y": 480 },
-    { "id": "toilet",     "label": "Restroom",         "type": "TOILET",    "x": 920, "y": 480 }
+    { "id": "research",   "label": "Research Lab",     "type": "LAB",       "x": 710, "y": 480 },
+    { "id": "toilet",     "label": "Restroom",         "type": "TOILET",    "x": 925, "y": 480 }
 
   ],
 
   "edges": [
-    { "from": "h1",      "to": "h2"       },
-    { "from": "h2",      "to": "h3"       },
-    { "from": "h3",      "to": "h4"       },
-    { "from": "h4",      "to": "corner"   },
-    { "from": "corner",  "to": "v1"       },
-    { "from": "v1",      "to": "v2"       },
-    { "from": "v2",      "to": "entrance" },
+    { "from": "h1",      "to": "h2"        },
+    { "from": "h2",      "to": "h3"        },
+    { "from": "h3",      "to": "h4"        },
+    { "from": "h4",      "to": "corner"    },
+    { "from": "corner",  "to": "v1"        },
+    { "from": "v1",      "to": "v2"        },
+    { "from": "v2",      "to": "entrance"  },
 
-    { "from": "h1",      "to": "hod"      },
-    { "from": "h2",      "to": "staff"    },
-    { "from": "h3",      "to": "seminar"  },
-    { "from": "h4",      "to": "library"  },
+    { "from": "h1",      "to": "hod"       },
+    { "from": "h2",      "to": "staff"     },
+    { "from": "h3",      "to": "seminar"   },
+    { "from": "h4",      "to": "library"   },
 
-    { "from": "h1",      "to": "cr1"      },
-    { "from": "h2",      "to": "cr2"      },
-    { "from": "h3",      "to": "comp_lab1"},
-    { "from": "h4",      "to": "comp_lab2"},
+    { "from": "hod",     "to": "office1"   },
+    { "from": "office1", "to": "staff"     },
+    { "from": "staff",   "to": "office3"   },
 
-    { "from": "v1",      "to": "net_lab"  },
-    { "from": "v1",      "to": "server"   },
-    { "from": "v2",      "to": "research" },
-    { "from": "v2",      "to": "toilet"   }
+    { "from": "h1",      "to": "cr1"       },
+    { "from": "h2",      "to": "cr2"       },
+    { "from": "h3",      "to": "comp_lab1" },
+    { "from": "h4",      "to": "comp_lab2" },
+
+    { "from": "v1",      "to": "net_lab"   },
+    { "from": "v1",      "to": "server"    },
+    { "from": "v2",      "to": "research"  },
+    { "from": "v2",      "to": "toilet"    }
   ],
 
   "accessPoints": [
     {
       "id": "AP1", "ssid": "AMU-CE-WiFi-1", "bssid": "AA:BB:CC:DD:EE:01",
-      "x": 170, "y": 150, "txPower": -40, "pathLossExponent": 2.7
+      "x": 441, "y":   5, "txPower": -40, "pathLossExponent": 2.7
     },
     {
       "id": "AP2", "ssid": "AMU-CE-WiFi-2", "bssid": "AA:BB:CC:DD:EE:02",
-      "x": 680, "y": 150, "txPower": -40, "pathLossExponent": 2.7
+      "x": 758, "y":  90, "txPower": -40, "pathLossExponent": 2.7
     },
     {
       "id": "AP3", "ssid": "AMU-CE-WiFi-3", "bssid": "AA:BB:CC:DD:EE:03",
-      "x": 170, "y": 410, "txPower": -40, "pathLossExponent": 2.7
+      "x":  80, "y": 460, "txPower": -40, "pathLossExponent": 2.7
     },
     {
       "id": "AP4", "ssid": "AMU-CE-WiFi-4", "bssid": "AA:BB:CC:DD:EE:04",
-      "x": 860, "y": 420, "txPower": -40, "pathLossExponent": 2.7
+      "x": 835, "y": 360, "txPower": -40, "pathLossExponent": 2.7
     }
   ],
 
   "rooms": [
-    { "id": "room_hod",     "x":  15, "y":   5, "w": 130, "h": 185, "type": "OFFICE"    },
-    { "id": "room_staff",   "x": 185, "y":   5, "w": 130, "h": 185, "type": "OFFICE"    },
-    { "id": "room_seminar", "x": 355, "y":   5, "w": 130, "h": 185, "type": "SEMINAR"   },
-    { "id": "room_library", "x": 525, "y":   5, "w": 130, "h": 185, "type": "LIBRARY"   },
+    { "id": "room_hod",     "x":   5, "y":  5, "w": 130, "h": 170, "type": "OFFICE"    },
+
+    { "id": "office_a",     "x": 140, "y":  5, "w":  68, "h": 170, "type": "OFFICE"    },
+    { "id": "office_b",     "x": 216, "y":  5, "w":  68, "h": 170, "type": "OFFICE"    },
+    { "id": "office_c",     "x": 290, "y":  5, "w":  68, "h": 170, "type": "OFFICE"    },
+
+    { "id": "room_seminar", "x": 362, "y":  5, "w": 158, "h": 185, "type": "SEMINAR"   },
+    { "id": "room_library", "x": 525, "y":  5, "w": 235, "h": 185, "type": "LIBRARY"   },
 
     { "id": "corr_h",       "x":   0, "y": 190, "w": 835, "h":  60, "type": "CORRIDOR"  },
     { "id": "corr_v",       "x": 765, "y": 190, "w":  70, "h": 425, "type": "CORRIDOR"  },
 
-    { "id": "room_cr1",     "x":  15, "y": 250, "w": 130, "h": 165, "type": "CLASSROOM" },
-    { "id": "room_cr2",     "x": 185, "y": 250, "w": 130, "h": 165, "type": "CLASSROOM" },
-    { "id": "room_lab1",    "x": 355, "y": 250, "w": 130, "h": 165, "type": "LAB"       },
-    { "id": "room_lab2",    "x": 525, "y": 250, "w": 130, "h": 165, "type": "LAB"       },
+    { "id": "room_lh1",     "x":   0, "y": 250, "w": 165, "h": 210, "type": "CLASSROOM" },
+    { "id": "room_lh2",     "x": 165, "y": 250, "w": 170, "h": 210, "type": "CLASSROOM" },
+    { "id": "room_lab1",    "x": 335, "y": 250, "w": 170, "h": 210, "type": "LAB"       },
+    { "id": "room_lab2",    "x": 505, "y": 250, "w": 150, "h": 210, "type": "LAB"       },
     { "id": "room_net",     "x": 655, "y": 250, "w": 110, "h": 165, "type": "LAB"       },
-    { "id": "room_server",  "x": 870, "y": 290, "w":  110, "h": 110, "type": "LAB"       },
+    { "id": "room_server",  "x": 870, "y": 290, "w": 110, "h": 110, "type": "LAB"       },
 
     { "id": "room_res",     "x": 655, "y": 415, "w": 110, "h": 145, "type": "LAB"       },
-    { "id": "room_toilet",  "x": 870, "y": 430, "w":  110, "h":  90, "type": "TOILET"    },
+    { "id": "room_toilet",  "x": 870, "y": 430, "w": 110, "h":  90, "type": "TOILET"    },
 
     { "id": "room_entr",    "x": 735, "y": 555, "w": 130, "h":  60, "type": "ENTRANCE"  }
   ]

@@ -80,7 +80,7 @@ class NavigationService:
         ]
 
         if len(raw) < 3:        # TODO: EKF doesn't need this hard constraint, it can predict with less than three
-            return LocalisationResult(ekf=self._ekf.position, kf=self._kf.position)
+            return LocalisationResult(ekf=self._ekf.position, kf=self._kf.position)  # pre-gate early return — rare path
 
         # Trilateration — used by the KF and to seed the EKF on first call
         tril_meas = [Measurement(ap=ap, distance_meters=r) for ap, r in raw]
@@ -90,16 +90,16 @@ class NavigationService:
         if not self._ekf.is_initialised and trilat is not None:
             self._ekf.initialise(trilat.x, trilat.y)
 
-        # new
         self._ekf.predict(dt)
         accepted = self._ekf.update(raw, cfg.meters_per_pixel)
         if accepted:
             self._ekf_consec_rejections = 0
         else:
             self._ekf_consec_rejections += 1
-            # 15 consecutive rejections ≈ 1.5 s at 10 Hz — genuine divergence,
-            # not a random noise spike (3 steps at 10 Hz was only 0.3 s).
-            if self._ekf_consec_rejections >= 15 and trilat is not None:
+            # Adaptive threshold: reinit only after 1.5 s of sustained rejection.
+            # max(3, int(1.5/dt)) scales automatically with the update rate:
+            #   10 Hz → 15 steps,  2 Hz → 3 steps,  1 Hz → 3 steps (floor).
+            if self._ekf_consec_rejections >= max(3, int(1.5 / dt)) and trilat is not None:
                 self._ekf.initialise(trilat.x, trilat.y)
                 self._ekf_consec_rejections = 0
 
@@ -109,7 +109,23 @@ class NavigationService:
         if trilat is not None:
             self._kf.update(trilat.x, trilat.y)
 
-        return LocalisationResult(ekf=self._ekf.position, kf=self._kf.position)
+        # Gate estimated positions to the canvas boundary.
+        # The EKF/KF state is unconstrained; large RSSI spikes can push the
+        # estimate outside the building footprint.  Clamping to canvas extent
+        # prevents the UI dot from escaping the map entirely.
+        W = float(cfg.canvas_width)
+        H = float(cfg.canvas_height)
+
+        def _gate(pos: Optional[Position]) -> Optional[Position]:
+            if pos is None:
+                return None
+            return Position(
+                x=max(0.0, min(W, pos.x)),
+                y=max(0.0, min(H, pos.y)),
+                uncertainty=pos.uncertainty,
+            )
+
+        return LocalisationResult(ekf=_gate(self._ekf.position), kf=_gate(self._kf.position))
 
     # new
     def reset_filters(self) -> None:
