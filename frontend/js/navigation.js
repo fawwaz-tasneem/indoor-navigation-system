@@ -102,34 +102,41 @@
     const sliders = sliderContainer.querySelectorAll('input[type="range"]');
     for (const s of sliders) rssiMap[s.dataset.bssid] = parseFloat(s.value);
 
-    let pos;
+    let result;
     try {
-      pos = await Api.localise(rssiMap, 1.0);
+      result = await Api.localise(rssiMap, 1.0);
     } catch (err) {
       alert('Localisation failed: ' + err.message);
       return;
     }
 
-    if (!pos) {
+    if (!result || (!result.ekf && !result.kf)) {
       document.getElementById('current-location').textContent = 'Not enough APs';
       return;
     }
 
-    MapRenderer.setPosition(pos);
+    // EKF is primary; fall back to KF if EKF not yet initialised
+    const primaryPos = result.ekf || result.kf;
 
-    document.getElementById('position-coords').textContent =
-      `Canvas: (${pos.x.toFixed(1)}, ${pos.y.toFixed(1)})  ±${pos.uncertainty.toFixed(1)} px`;
+    MapRenderer.setPosition(result.ekf, result.kf);
 
-    // Find nearest named node
-    const nearest = await Api.nearestNode(pos.x, pos.y);
+    const ekfText = result.ekf
+      ? `EKF (${result.ekf.x.toFixed(1)}, ${result.ekf.y.toFixed(1)}) ±${result.ekf.uncertainty.toFixed(1)} px`
+      : 'EKF: N/A';
+    const kfText = result.kf
+      ? `KF (${result.kf.x.toFixed(1)}, ${result.kf.y.toFixed(1)}) ±${result.kf.uncertainty.toFixed(1)} px`
+      : 'KF: N/A';
+    document.getElementById('position-coords').textContent = `${ekfText}   |   ${kfText}`;
+
+    const nearest = await Api.nearestNode(primaryPos.x, primaryPos.y);
     if (nearest) {
       fromNodeId = nearest.id;
       document.getElementById('current-location').textContent = nearest.label;
     }
 
-    // If a destination is already chosen, refresh the path
     const destId = destSelect.value;
     if (fromNodeId && destId) await showPath(fromNodeId, destId);
+
   });
 
   // ── Navigate button ───────────────────────────────────────────────────────

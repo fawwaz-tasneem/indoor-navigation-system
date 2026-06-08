@@ -28,7 +28,9 @@ const MapRenderer = (() => {
 
   let canvas, ctx, mapConfig;
   let currentPath     = [];   // array of NavNode
-  let currentPosition = null; // { x, y, uncertainty }
+  let currentEkfPosition = null;   // { x, y, uncertainty } from EKF
+  let currentKfPosition  = null;   // { x, y, uncertainty } from KF
+
   let clickCallback   = null;
 
   // ── public ──────────────────────────────────────────────────────────────
@@ -57,10 +59,12 @@ const MapRenderer = (() => {
     render();
   }
 
-  function setPosition(pos) {
-    currentPosition = pos;
+  function setPosition(ekfPos, kfPos = null) {
+    currentEkfPosition = ekfPos;
+    currentKfPosition  = kfPos;
     render();
   }
+
 
   function onCanvasClick(fn) {
     clickCallback = fn;
@@ -76,7 +80,9 @@ const MapRenderer = (() => {
     drawPathEdges();
     drawNodes();
     drawAccessPoints();
-    if (currentPosition) drawPosition();
+    if (currentKfPosition)  drawKfPosition();
+    if (currentEkfPosition) drawEkfPosition();
+
   }
 
   function drawEdges() {
@@ -171,35 +177,55 @@ const MapRenderer = (() => {
     }
   }
 
-  function drawPosition() {
-    const { x, y, uncertainty } = currentPosition;
+  function drawEkfPosition() {
+      const { x, y, uncertainty } = currentEkfPosition;
 
-    // Uncertainty circle
-    if (uncertainty > 0) {
+      if (uncertainty > 0) {
+          ctx.beginPath();
+          ctx.arc(x, y, uncertainty, 0, Math.PI * 2);
+          ctx.fillStyle   = 'rgba(45,114,72,0.15)';
+          ctx.strokeStyle = 'rgba(45,114,72,0.45)';
+          ctx.lineWidth   = 1;
+          ctx.fill();
+          ctx.stroke();
+      }
+
       ctx.beginPath();
-      ctx.arc(x, y, uncertainty, 0, Math.PI * 2);
-      ctx.fillStyle   = 'rgba(45,114,72,0.15)';    // green tint
-      ctx.strokeStyle = 'rgba(45,114,72,0.45)';
-      ctx.lineWidth   = 1;
+      ctx.arc(x, y, 8, 0, Math.PI * 2);
+      ctx.fillStyle   = '#ffffff';
+      ctx.strokeStyle = '#3D9E68';
+      ctx.lineWidth   = 3;
       ctx.fill();
       ctx.stroke();
-    }
 
-    // Position dot
-    ctx.beginPath();
-    ctx.arc(x, y, 8, 0, Math.PI * 2);
-    ctx.fillStyle   = '#ffffff';
-    ctx.strokeStyle = '#3D9E68';   // AMU green border
-    ctx.lineWidth   = 3;
-    ctx.fill();
-    ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(x, y, 16, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(61,158,104,0.5)';
+      ctx.lineWidth   = 1.5;
+      ctx.stroke();
+  }
 
-    // Pulse ring
-    ctx.beginPath();
-    ctx.arc(x, y, 16, 0, Math.PI * 2);
-    ctx.strokeStyle = 'rgba(61,158,104,0.5)';
-    ctx.lineWidth   = 1.5;
-    ctx.stroke();
+  function drawKfPosition() {
+      const { x, y, uncertainty } = currentKfPosition;
+
+      if (uncertainty > 0) {
+          ctx.beginPath();
+          ctx.arc(x, y, uncertainty, 0, Math.PI * 2);
+          ctx.fillStyle   = 'rgba(100,149,237,0.12)';   // cornflower-blue tint
+          ctx.strokeStyle = 'rgba(100,149,237,0.35)';
+          ctx.lineWidth   = 1;
+          ctx.fill();
+          ctx.stroke();
+      }
+
+      // Smaller dot, different colour, so we can visually compare EKF vs KF
+      ctx.beginPath();
+      ctx.arc(x, y, 6, 0, Math.PI * 2);
+      ctx.fillStyle   = '#6495ED';   // cornflower blue
+      ctx.strokeStyle = '#1a3a6e';
+      ctx.lineWidth   = 2;
+      ctx.fill();
+      ctx.stroke();
   }
 
   // ── helpers ──────────────────────────────────────────────────────────────

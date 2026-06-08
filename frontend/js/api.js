@@ -25,7 +25,7 @@ const Api = {
     });
     if (res.status === 204 || res.status === 422) return null;
     if (!res.ok) throw new Error('Localise request failed');
-    return res.json();   // { x, y, uncertainty }
+    return res.json();   // { ekf: { x, y, uncertainty }, kf: { x, y, uncertainty } }
   },
 
   /**
