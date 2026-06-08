@@ -6,6 +6,10 @@ from typing import List, Optional
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
 
+"""
+This file defines the data models and contracts for the entire indoor navigation and tracking application.
+It serves as the single source of truth for how data is structured
+"""
 
 class _CamelModel(BaseModel):
     """Base model: accepts camelCase JSON in, serialises camelCase JSON out."""
@@ -63,3 +67,17 @@ class Position(_CamelModel):
     x:           float
     y:           float
     uncertainty: float
+
+
+class LocalisationResult(_CamelModel):
+    """
+    Output from the dual-filter localisation pipeline.
+
+    ekf : genuine EKF estimate  (fuses raw per-AP ranges, nonlinear h)
+    kf  : linear KF estimate    (fuses trilaterated position, linear H)
+
+    Both run on every call so their outputs can be compared directly.
+    Either field is None before that filter has been initialised.
+    """
+    ekf: Optional[Position] = None
+    kf:  Optional[Position] = None
