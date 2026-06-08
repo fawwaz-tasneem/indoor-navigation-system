@@ -46,20 +46,15 @@ class LocaliseRequest(BaseModel):
 
 # ── routes ────────────────────────────────────────────────────────────────────
 
+# 
 @router.post("/localise")
-async def localise(
-    req: LocaliseRequest,
-    svc: NavigationService = Depends(get_navigation_service),
-):
-    """
-    POST /api/nav/localise
-    Body: { "rssi": {"AA:BB:CC:DD:EE:01": -65, ...}, "dt": 1.0 }
-    Returns both EKF (raw-range fusion) and KF (trilaterated-position fusion) estimates.
-    """
+async def localise(req: LocaliseRequest):
+    svc    = get_navigation_service(req.session_id)
     result = svc.localise(req.rssi, req.dt)
     if result.ekf is None and result.kf is None:
         raise HTTPException(status_code=204, detail="Not enough measurements")
     return result.model_dump(by_alias=True)
+
 
 
 @router.get("/path")
@@ -87,10 +82,10 @@ async def nearest_node(
         raise HTTPException(status_code=404, detail="No nodes in map")
     return node.model_dump(by_alias=True)
 
-
 @router.post("/reset")
-async def reset_filters(svc: NavigationService = Depends(get_navigation_service)):
-    """Reset both filters so localisation starts fresh."""
-    svc.reset_filters()
+async def reset_filters(session_id: str = "default"):
+    """Reset both filters for the given session so localisation starts fresh."""
+    get_navigation_service(session_id).reset_filters()
     return {"status": "reset"}
+
 
